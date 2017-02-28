@@ -74,6 +74,11 @@ var (
 					Value: 3,
 				},
 
+        cli.BoolFlag{
+          Name: "swarm-disabled",
+          Usage: "Disable Swarm",
+        },
+
 				cli.StringFlag{
 					Name:  "swarm-discovery",
 					Usage: "Discovery service to use with Swarm",

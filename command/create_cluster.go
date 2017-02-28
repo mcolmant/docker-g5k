@@ -155,8 +155,36 @@ func (c *Command) provisionNode(nodeName string, isSwarmMaster bool) error {
 	// mandatory, or driver will use bad paths
 	h.HostOptions.AuthOptions = c.createHostAuthOptions(nodeName)
 
-	// set swarm options
-	h.HostOptions.SwarmOptions = c.createHostSwarmOptions(nodeName, isSwarmMaster)
+  if !c.cli.Bool("swarm-disabled") {
+    // check Docker Swarm discovery
+  	swarmDiscovery := c.cli.String("swarm-discovery")
+  	if swarmDiscovery == "" {
+  		swarmDiscoveryToken, err := g5kswarm.GetNewSwarmDiscoveryToken()
+  		if err != nil {
+  			return err
+  		}
+
+  		// set discovery token in CLI context
+  		c.cli.Set("swarm-discovery", fmt.Sprintf("token://%s", swarmDiscoveryToken))
+
+  		log.Infof("New Swarm discovery token generated : '%s'", swarmDiscoveryToken)
+  	}
+
+  	// check Docker Swarm image
+  	swarmImage := c.cli.String("swarm-image")
+  	if swarmImage == "" {
+  		return fmt.Errorf("You must provide a Swarm image")
+  	}
+
+  	// check Docker Swarm strategy
+  	swarmStrategy := c.cli.String("swarm-strategy")
+  	if swarmStrategy == "" {
+  		return fmt.Errorf("You must provide a Swarm strategy")
+  	}
+
+    // set swarm options
+    h.HostOptions.SwarmOptions = c.createHostSwarmOptions(nodeName, isSwarmMaster)
+  }
 
 	// provision the new machine
 	if err := client.Create(h); err != nil {
@@ -253,32 +281,6 @@ func (c *Command) checkCliParameters() error {
 	// check if public key file exist
 	if _, err := os.Stat(sshPubKey); os.IsNotExist(err) {
 		return fmt.Errorf("Your ssh public key file does not exist in : '%s'", sshPubKey)
-	}
-
-	// check Docker Swarm discovery
-	swarmDiscovery := c.cli.String("swarm-discovery")
-	if swarmDiscovery == "" {
-		swarmDiscoveryToken, err := g5kswarm.GetNewSwarmDiscoveryToken()
-		if err != nil {
-			return err
-		}
-
-		// set discovery token in CLI context
-		c.cli.Set("swarm-discovery", fmt.Sprintf("token://%s", swarmDiscoveryToken))
-
-		log.Infof("New Swarm discovery token generated : '%s'", swarmDiscoveryToken)
-	}
-
-	// check Docker Swarm image
-	swarmImage := c.cli.String("swarm-image")
-	if swarmImage == "" {
-		return fmt.Errorf("You must provide a Swarm image")
-	}
-
-	// check Docker Swarm strategy
-	swarmStrategy := c.cli.String("swarm-strategy")
-	if swarmStrategy == "" {
-		return fmt.Errorf("You must provide a Swarm strategy")
 	}
 
 	return nil
