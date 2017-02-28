@@ -49,6 +49,7 @@ Please follow the instructions from the [Grid5000 Wiki](https://www.grid5000.fr/
 | `--g5k-ssh-public-key`       | Path of your ssh public key                             | "< private-key >.pub" | No         |
 | `--g5k-image`                | Name of the image to deploy                             | "jessie-x64-min"      | No         |
 | `--g5k-resource-properties`  | Resource selection with OAR properties (SQL format)     |                       | No         |
+| `--swarm-disabled`           | Disable the automatic swarm cluster creation            | False                 | No         |
 | `--swarm-discovery`          | Discovery service to use with Swarm                     | Generate a new token  | No         |
 | `--swarm-image`              | Specify Docker image to use for Swarm                   | "swarm:latest"        | No         |
 | `--swarm-strategy`           | Define a default scheduling strategy for Swarm          | "spread"              | No         |
